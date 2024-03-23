@@ -13,6 +13,8 @@ void retornaBin(int a){
    
 } 
 
+//Definir um intervalo (-2000, 2000) para que achemos uma boa solução 
+
 
 int main(){
     srand(time(0));
@@ -28,7 +30,8 @@ int main(){
         cout << "Deseja criar dois individuos aleatorios? (s/n)" << endl;
         cin >> op;
         if(op == 's'){
-            cout << "\nEste e o indivduo 1: ";
+            //cria dois individuos geneticamente diferentes
+            cout << "\nEste e o indivduo 2: ";
             individuo1 = rand();
             cout << individuo1 << endl;
             retornaBin(individuo1);
