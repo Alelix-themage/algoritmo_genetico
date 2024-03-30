@@ -1,10 +1,11 @@
 // Alessandro Luis Pinheiro da Rocha Junior Código: 2230837
 // Mateus Tiraboschi de Castro              Código: 2200040
-// Igor Luis Dia Morais                     Código: 2199713
+// Igor Luis Dias Morais                     Código: 2199713
 
 
 #include <iostream>
 #include <cmath>
+#include <algorithm> 
 using namespace std;
 
 //struct com o individuo e o array de individuo
@@ -27,56 +28,14 @@ void retornaBin(int a) {
 int equacao(int x, int a,int b,int c,int d,int e, int f){
     // Utiliza-se a função pow para realizar contas exponenciais
    int calculo = pow(x, 5)*a + pow(x, 4)*b + pow(x, 3)*c + pow(x, 2)*d + pow(x, 1)*e + f;
-   cout << "\nO valor do calculo e : " << calculo << endl;
+   cout << "-----------------------------------------" << endl;
    cout << "Nosso 'x' e: " << x << endl;
-
+   cout << "\nO valor do calculo e : " << calculo << endl;
    return calculo;
 }
 
-void populacaoInicial(int tamanho, int populacao[]) {
-    Individuos ind;
-    char opc;
-    //Para 10 Indivíduos o recomendado é: max/min [40,-40]
-    //Para 100 Indivíduos o recomendado é: max/min [60,-60]
-    //Para 1000 Indivíduos o recomendado é: max/min [70,-100]
-    int max = 40; 
-    int min = -40;
-
-    int a=1;
-    int b=2, c=3, d=4, e=5, f=6;
-    int result = 0; //resultado da equação
-    //Forneça valores pequenos para os coeficientes(a, b,c, d,e f), para conseguirmos uma solução satisfatória
-    cout << "Forneca os valores que serao utilizados na nossa equacao: " << endl;
-    cout<< "Digite o valor de a, sendo a diferente de 0" << endl;
-    cin >> a;
-    if (a==0){
-        cout << "O 'a' tem que ser difrente de 0!" << endl;
-    }
-    cout << "Deseja gerar uma populacao aleatoria? (s/n)" << endl;
-    cin >> opc;
-    for (int i = 0; i < tamanho; i++) {
-        int individuo_aleatorio = min + rand() % (max - min + 1);
-
-        // criar individuos geneticamente diferentes 
-        if (opc == 's') {
-            cout << "\nEstes sao os individuos : " << endl;
-            populacao[i] = individuo_aleatorio;
-            cout << populacao[i] << endl;
-            ind.individuo = populacao[i];
-            cout << "Representacao binaria: ";
-            retornaBin(populacao[i]);
-            cout << "\n" << endl;
-
-
-            ind.resultado = equacao(ind.individuo, a,b,c,d,e,f);
-            cout << "\nO valor da equacao para esse individuo e: " << ind.resultado << endl;
-            cout << ind.individuo;
-
-            /*if(ind.resultado[i] == 0){
-                cout<<"Solucao Satisfatoria" << endl;
-            }*/
-        }
-    }   
+bool ordenarIndividuos(int a, int b) {
+    return abs(a) < abs(b);
 }
 
 
@@ -94,6 +53,69 @@ int crossover(int pai, int mae) {
     return filho;
 }
 
+
+void populacaoInicial(int tamanho, int populacao[]) {
+    Individuos ind;
+    char opc;
+    //Para 10 Indivíduos o recomendado é: max/min [40,-40]
+    //Para 100 Indivíduos o recomendado é: max/min [60,-60]
+    //Para 1000 Indivíduos o recomendado é: max/min [70,-100]
+    int max = 40; 
+    int min = -40;
+
+    int a=1;
+    int b=2, c=3, d=4, e=5, f=6;
+    //Forneça valores pequenos para os coeficientes(a, b,c, d,e f), para conseguirmos uma solução satisfatória
+    cout << "Forneca os valores que serao utilizados na nossa equacao: " << endl;
+    cout<< "Digite o valor de a, sendo a diferente de 0" << endl;
+    cin >> a;
+    if (a==0){
+        cout << "O 'a' tem que ser difrente de 0!" << endl;
+    }
+    cout << "Deseja gerar uma populacao aleatoria? (s/n)" << endl;
+    cin >> opc;
+    cout << "\nEstes sao os individuos : " << endl;
+    for (int i = 0; i < tamanho; i++) {
+        int individuo_aleatorio = min + rand() % (max - min + 1);
+
+        // criar individuos geneticamente diferentes 
+        if (opc == 's') {
+            populacao[i] = individuo_aleatorio;
+            cout << populacao[i] << endl;
+            ind.individuo = populacao[i];
+            cout << "Representacao binaria: ";
+            retornaBin(populacao[i]);
+            cout << "\n" << endl;
+
+
+            ind.resultado = equacao(ind.individuo, a,b,c,d,e,f);
+
+            int limitePosi = 2;
+            int limiteNeg = -2;
+
+            if (ind.individuo >= limiteNeg && ind.individuo <= limitePosi){
+                cout << "Valor satisfatorio!" << endl;
+            }           
+           else{
+            cout << "Valor insatisfatorio!" << endl;
+           }
+        }
+    } 
+      // colocar o ind.individuo em um vetor estatico que atualiza toda hora, setar o tamanho  pela variavel tamanho
+    cout << "------------------------------------------------------------------" << endl;
+    std::sort(populacao, populacao + tamanho, ordenarIndividuos);
+
+    cout << "Ranking de Individuos" << std::endl;
+    for (int i = 0; i < tamanho; i++) {
+        //os melhores resultados fica na posição 1 e 2
+        cout << "Posicao " << i + 1<< ": " << populacao[i] << std::endl; 
+    }  
+    int tam_cross = 8; //tamanho de 8, pois vamos deixar os dois melhores de fora
+    for(int i = 0; i< tam_cross; i++){
+        crossover(populacao[]);
+    }
+}
+    
 
 
 int main() {
@@ -116,6 +138,7 @@ int main() {
             cout<< "Digite o valor da taxa de mutacao: " << endl;
             int taxa_de_mutacao;
             cin>>taxa_de_mutacao;            
+            cout << "----------------------------------------------------------------" << endl;
         }
         else {
             cout << "Nao sao permitidas populacoes que nao tenham tamanho de 10, 100 ou 1000!" << endl;
