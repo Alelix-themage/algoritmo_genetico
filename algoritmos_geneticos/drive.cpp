@@ -48,22 +48,24 @@ bool ordenarIndividuos(int a, int b) {
 // Função que realiza o crossover entre dois binários
 int crossover(int peoples[], int tamanho, int filhos[]) {
     Individuos ind;
-
+    const int NUM_BITS = 16; // Define o número de bits desejado 16 em deslocamento de bits
     int contador_filhos = 0;
     // Realiza o crossover combinando parte dos genes do pai e da mãe
     for (int i = 2; i < tamanho; i += 2) {
-        int genes_pai = sizeof(int) * 8; // Pega o tamanho de inteiro e multiplica por 8
-        int genes_mae = genes_pai / 2;
-         int metade_pai = peoples[i] & ((1 << genes_mae) - 1); //  pegar os bits menos significativos, pegando metade
-         int metade_mae = peoples[i + 1] >> genes_mae; // Desloca os bits da metade mais significativa para a direita
+        int genes_pai = NUM_BITS; // Define o número de bits para o pai
+        int genes_mae = NUM_BITS; // Define o número de bits para a mãe
+        int metade_pai = peoples[i] & ((1 << genes_pai) - 1); // Pegar os bits menos significativos, pegando metade
+        int metade_mae = peoples[i + 1] >> genes_mae; // Desloca os bits da metade mais significativa para a direita
         int filho = (metade_mae << genes_mae) | metade_pai; // Combina os genes para formar o filho
-        cout << "\nEsse e o pai: " << peoples[i] << endl;
-        cout << "Esse e o da mae: " << peoples[i + 1] << endl;
-        cout << "Esse e o filho: " << filho << endl;
-        filhos[contador_filhos++] = filho; //Armazena os filho no contador fihlhos, o ++ serve para armazenar o próximo filho no próximo indice
+
+        cout << "\nEsse é o pai: " << peoples[i] << endl;
+        cout << "Esse é o da mee: " << peoples[i + 1] << endl;
+        cout << "Esse é o filho: " << filho << endl;
+        filhos[contador_filhos++] = filho; // Armazena os filho no contador filhos, o ++ serve para armazenar o próximo filho no próximo índice
     }
     return contador_filhos;
 }
+
 
 
 void substituirPaisPorFilhos(int populacao[], int filhos[], int contador_filhos) {
@@ -171,7 +173,7 @@ void populacaoInicial(int tamanho, int populacao[]){
     }
 
 
-    int tam_cross = 100; // tam _cross serve para cruzar indvivíduos, deixando intactos os melhores
+    int tam_cross = 10; // tam _cross serve para cruzar indvivíduos, deixando intactos os melhores
     //tem que trocar para o tamanho da população que deseja
     int filhos[tam_cross];
    
@@ -184,7 +186,7 @@ void populacaoInicial(int tamanho, int populacao[]){
     // Caso a população seja 100 --> i < 60
     //Caso a população seja 1000 --> i < 600
     cout<< "\nNovos Individuos: " << endl;
-    for(int i = 0; i < 60; i++){
+    for(int i = 0; i < 6; i++){
         cout << "Inviduo: "<< populacao[i] << endl;
         ind.individuos_para_mutar[i] = populacao[i];
     }
