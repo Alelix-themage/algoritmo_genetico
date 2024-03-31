@@ -30,12 +30,11 @@ void retornaBin(int a) {
 
 // Equação matemática
 int equacao(int x){
-    int a = 1s; //tem que ser diferente de 0
-    int b = 1, c = 2, d = 3, e = 4, f = 3;
+    int a = 1; //tem que ser diferente de 0
+    int b = 1, c = 1, d = 1, e = 1, f = 1;
     // Forneça valores pequenos para os coeficientes(a, b, c, d, e, f), para conseguirmos uma solução satisfatória
     // Utiliza-se a função pow para realizar contas exponenciais
    int calculo = pow(x, 5)*a + pow(x, 4)*b + pow(x, 3)*c + pow(x, 2)*d + pow(x, 1)*e + f;
-   cout << "-----------------------------------------" << endl;
    cout << "Nosso 'x' e: " << x << endl;
    cout << "\nO valor do calculo e : " << calculo << endl;
    return calculo;
@@ -74,19 +73,24 @@ void substituirPaisPorFilhos(int populacao[], int filhos[], int contador_filhos)
     }
 }
 
+bool acabaCod(int a){
+    return 0;
+}
 
-/*void avaliapopulacao(int x){
+void avaliapopulacao(int x){
     Individuos ind;
     int limitePosi = 2; // Parametro de satisfação do calculo
     int limiteNeg = -2;
     ind.avaliando_mutacao = equacao(x);
-    if (ind.avaliando_mutacao >= limiteNeg && ind.avaliando_mutacao <= limitePosi) {
+    if (ind.avaliando_mutacao >= limiteNeg && ind.resultado <= limitePosi) {
         cout << "Valor satisfatorio!" << endl;
+    cout << "-----------------------------------------" << endl;    
     }  
     else {
         cout << "Valor insatisfatorio!" << endl;
+    cout << "-----------------------------------------" << endl;    
     }
-}*/
+}
 
 
 void populacaoInicial(int tamanho, int populacao[]){
@@ -95,12 +99,13 @@ void populacaoInicial(int tamanho, int populacao[]){
     // Para 10 Indivíduos o recomendado é: max/min [40,-40]
     // Para 100 Indivíduos o recomendado é: max/min [60,-60]
     // Para 1000 Indivíduos o recomendado é: max/min [70,-100] O RECOMENDADO
-    int max = 20;
-    int min = -20;
+    int max = 70;
+    int min = -70;
 
     cout << "Deseja gerar uma populacao aleatoria? (s/n)" << endl;
     cin >> opc;
     cout << "\nEstes sao os individuos : " << endl;
+    cout << "-----------------------------------------" << endl;    
     for (int i = 0; i < tamanho; i++) {
         int individuo_aleatorio = min + rand() % (max - min + 1);
 
@@ -114,23 +119,24 @@ void populacaoInicial(int tamanho, int populacao[]){
             cout << "\n" << endl;
 
             ind.resultado = equacao(ind.individuo);
-            
-            int limitePosi = 2;
-            int limiteNeg = -2;
 
-            if (ind.individuo >= limiteNeg && ind.individuo <= limitePosi){
-                cout << "Valor satisfatorio!" << endl;
-            }           
-            else{
-            cout << "Valor insatisfatorio!" << endl;
+            int limitePosi = 10; // Parametro de satisfação do calculo
+            int limiteNeg = -10;
+            if (ind.resultado >= limiteNeg && ind.resultado <= limitePosi) {
+              cout << "Valor satisfatorio!" << endl;
+              cout << "-----------------------------------------" << endl;
+            }  
+            else {
+               cout << "Valor insatisfatorio!" << endl;
+               cout << "-----------------------------------------" << endl;
             }
 
 
         }   
-        
     }
-     // colocar o ind.individuo em um vetor estatico que atualiza toda hora, setar o tamanho  pela variavel tamanho
-    cout << "------------------------------------------------------------------" << endl;
+
+    
+     // colocar o ind.individuo em um vetor estatico que atualiza toda hora, setar o tamanho  pela variavel tamanho  
 
     std::sort(populacao, populacao + tamanho, ordenarIndividuos);
 
@@ -151,11 +157,11 @@ void populacaoInicial(int tamanho, int populacao[]){
     for (int i = 0; i < tamanho; i++) {
         populacao[i] = novaPopulacao[i];
     }
-
-    cout<< "----------------------------------------------------------------------------------------------"<< endl;
+    
     char solucao;
     cout<< "A solucao e boa? " << endl;
     cin >> solucao;
+
 
     if(solucao == 's'){
         cout<< "Voce achou a solucao satisfatoria!" << endl;
@@ -165,7 +171,7 @@ void populacaoInicial(int tamanho, int populacao[]){
     }
 
 
-    int tam_cross = 10; // tam _cross serve para cruzar indvivíduos, deixando intactos os melhores
+    int tam_cross = 100; // tam _cross serve para cruzar indvivíduos, deixando intactos os melhores
     //tem que trocar para o tamanho da população que deseja
     int filhos[tam_cross];
    
@@ -178,7 +184,7 @@ void populacaoInicial(int tamanho, int populacao[]){
     // Caso a população seja 100 --> i < 60
     //Caso a população seja 1000 --> i < 600
     cout<< "\nNovos Individuos: " << endl;
-    for(int i = 0; i < 6; i++){
+    for(int i = 0; i < 60; i++){
         cout << "Inviduo: "<< populacao[i] << endl;
         ind.individuos_para_mutar[i] = populacao[i];
     }
@@ -187,7 +193,6 @@ void populacaoInicial(int tamanho, int populacao[]){
 }
 
 void mutacao(int individuos_para_mutar[], int tamanho){
-    Individuos ind;
     int individuos_mutados[tamanho]; // Array para armazenar os individuos mutados
     int flip = rand() % 2;
     if(tamanho == 10){
@@ -223,7 +228,8 @@ void mutacao(int individuos_para_mutar[], int tamanho){
 
     // Substitui os indivíduos originais pelos indivíduos mutados
     cout<< "----------------------------------------------------------------------------" << endl;
-    cout<< "Nova populacao com individuos mutados" << endl;
+    cout<< "Nova populacao com individuos mutados: " << endl;
+    cout << "-----------------------------------------" << endl;
     for(int i = 0; i < tamanho; i++) {
         individuos_para_mutar[i] = individuos_mutados[i];
         cout<< individuos_para_mutar[i]<< endl; //indivíduos mutados junto com os não mutados
@@ -240,6 +246,7 @@ int main() {
     srand(time(NULL));
     char op;
     int tamanho_da_populacao = 0;
+    int geracao = 0;
 
     const int MAX_TAMANHO_POPULACAO = 1000; // declaração do tamanho max da população
     int populacao[MAX_TAMANHO_POPULACAO]; //atribuição do tamanho maximo da população para sofrer o crossover
@@ -252,9 +259,10 @@ int main() {
         cin >> tamanho_da_populacao;
         if (tamanho_da_populacao == 10 || tamanho_da_populacao == 100 || tamanho_da_populacao == 1000) {
             populacaoInicial(tamanho_da_populacao, populacao); // armazenar individuos gerados
+            
             cout<< "Iniciando Mutacao " << endl;
             mutacao( populacao, tamanho_da_populacao);       
-            cout << "----------------------------------------------------------------" << endl;  
+            cout << "----------------------------------------------------------------" << endl;
         }
         else {
             cout << "Nao sao permitidas populacoes que nao tenham tamanho de 10, 100 ou 1000!" << endl;
