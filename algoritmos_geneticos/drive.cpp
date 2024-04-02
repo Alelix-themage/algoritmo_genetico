@@ -1,277 +1,209 @@
 // Alessandro Luis Pinheiro da Rocha Junior Código: 2230837
+// Felipe Julien Rocha Pinho Código: 2241480
 // Mateus Tiraboschi de Castro              Código: 2200040
 // Igor Luis Dias Morais                     Código: 2199713
-
-
 #include <iostream>
 #include <cmath>
-#include <algorithm> 
+#include <algorithm>
+#include <ctime>
 using namespace std;
 
-//struct com o individuo e o array de individuo
+// Estrutura para representar indivíduos
 struct Individuos {
-    int individuo = 0;
-    int resultado =0;
-    static const int MAX_TAMANHO_POPULACAO = 1000; // declaração do tamanho max da população
-    int individuos_para_mutar[MAX_TAMANHO_POPULACAO];
-    int resultado_mutacao[MAX_TAMANHO_POPULACAO];
-    int avaliando_mutacao = 0;
+    int individuo = 0; // Valor do indivíduo
+    int resultado = 0; // Resultado da equação para o indivíduo
+    static const int MAX_TAMANHO_POPULACAO = 1000; // Tamanho máximo da população
+    int individuos_para_mutar[MAX_TAMANHO_POPULACAO]; // Array de indivíduos para mutação
+    int resultado_mutacao[MAX_TAMANHO_POPULACAO]; // Resultado da mutação para cada indivíduo
+    int individuos[MAX_TAMANHO_POPULACAO]; // Array de indivíduos
+    int avaliando_mutacao = 0; // Resultado da avaliação da mutação
 };
 
-//Utilizamos a função bitwise porque ela trabalha bit a bit, assim fica mais fácil de mudar o "bit" genético
+// Função para converter decimal em binário
 void retornaBin(int a) {
-    //Converte um valor decimal em binario
-    int bit = 0;
-    for (int i = 31; i >= 0; i--) { //vai passar bit a bit o numero que passamos com sentido a direita, sempre analisando se deveria ser 1 ou 0
-        bit = (a >> i) & 1;
+    for (int i = 31; i >= 0; i--) {
+        int bit = (a >> i) & 1;
         cout << bit;
     }
 }
 
-// Equação matemática
+// Função para calcular a equação matemática
 int equacao(int x){
-    int a = 1; //tem que ser diferente de 0
-    int b = 1, c = 1, d = 1, e = 1, f = 1;
-    // Forneça valores pequenos para os coeficientes(a, b, c, d, e, f), para conseguirmos uma solução satisfatória
-    // Utiliza-se a função pow para realizar contas exponenciais
-   int calculo = pow(x, 5)*a + pow(x, 4)*b + pow(x, 3)*c + pow(x, 2)*d + pow(x, 1)*e + f;
-   cout << "Nosso 'x' e: " << x << endl;
-   cout << "\nO valor do calculo e : " << calculo << endl;
-   return calculo;
+    int a = 1;
+    int b = 1, c = 2, d = 3, e = 4, f = 5;
+    long long calculo = pow(x, 5)*a + pow(x, 4)*b + pow(x, 3)*c + pow(x, 2)*d + pow(x, 1)*e + f;
+    return abs(calculo);
 }
 
+// Função para ordenar os indivíduos
 bool ordenarIndividuos(int a, int b) {
     return abs(a) < abs(b);
 }
 
-
-// Função que realiza o crossover entre dois binários
+// Função para realizar o crossover entre dois indivíduos
 int crossover(int peoples[], int tamanho, int filhos[]) {
-    Individuos ind;
-    const int NUM_BITS = 16; // Define o número de bits desejado 16 em deslocamento de bits
+    const int NUM_BITS = 16;
     int contador_filhos = 0;
-    // Realiza o crossover combinando parte dos genes do pai e da mãe
     for (int i = 2; i < tamanho; i += 2) {
-        int genes_pai = NUM_BITS; // Define o número de bits para o pai
-        int genes_mae = NUM_BITS; // Define o número de bits para a mãe
-        int metade_pai = peoples[i] & ((1 << genes_pai) - 1); // Pegar os bits menos significativos, pegando metade
-        int metade_mae = peoples[i + 1] >> genes_mae; // Desloca os bits da metade mais significativa para a direita
-        int filho = (metade_mae << genes_mae) | metade_pai; // Combina os genes para formar o filho
-
-        cout << "\nEsse é o pai: " << peoples[i] << endl;
-        cout << "Esse é o da mee: " << peoples[i + 1] << endl;
-        cout << "Esse é o filho: " << filho << endl;
-        filhos[contador_filhos++] = filho; // Armazena os filho no contador filhos, o ++ serve para armazenar o próximo filho no próximo índice
+        int genes_pai = NUM_BITS;
+        int genes_mae = NUM_BITS;
+        int metade_pai = peoples[i] & ((1 << genes_pai) - 1);
+        int metade_mae = peoples[i + 1] >> genes_mae;
+        int filho = (metade_mae << genes_mae) | metade_pai;
+        filhos[contador_filhos++] = filho;
     }
     return contador_filhos;
 }
 
-
-
+// Função para substituir pais por filhos na população
 void substituirPaisPorFilhos(int populacao[], int filhos[], int contador_filhos) {
-    // Substitui todos os pais pelos filhos gerados
     for (int i = 0; i < contador_filhos; i++) {
         populacao[i + 2] = filhos[i];
     }
 }
 
-bool acabaCod(int a){
-    return 0;
-}
-
+// Função para avaliar a população
 void avaliapopulacao(int x){
-    Individuos ind;
-    int limitePosi = 2; // Parametro de satisfação do calculo
+    int limitePosi = 2;
     int limiteNeg = -2;
-    ind.avaliando_mutacao = equacao(x);
-    if (ind.avaliando_mutacao >= limiteNeg && ind.resultado <= limitePosi) {
+    int avaliando_mutacao = equacao(x);
+    if (avaliando_mutacao >= limiteNeg && avaliando_mutacao < limitePosi) {
         cout << "Valor satisfatorio!" << endl;
-    cout << "-----------------------------------------" << endl;    
     }  
     else {
         cout << "Valor insatisfatorio!" << endl;
-    cout << "-----------------------------------------" << endl;    
     }
 }
 
-
+// Função para inicializar a população
 void populacaoInicial(int tamanho, int populacao[]){
-    Individuos ind;
     char opc;
-    // Para 10 Indivíduos o recomendado é: max/min [40,-40]
-    // Para 100 Indivíduos o recomendado é: max/min [60,-60]
-    // Para 1000 Indivíduos o recomendado é: max/min [70,-100] O RECOMENDADO
     int max = 70;
     int min = -70;
-
     cout << "Deseja gerar uma populacao aleatoria? (s/n)" << endl;
     cin >> opc;
     cout << "\nEstes sao os individuos : " << endl;
     cout << "-----------------------------------------" << endl;    
     for (int i = 0; i < tamanho; i++) {
         int individuo_aleatorio = min + rand() % (max - min + 1);
-
-        // Criar individuos geneticamente diferentes
         if (opc == 's') {
             populacao[i] = individuo_aleatorio;
             cout << populacao[i] << endl;
-            ind.individuo = populacao[i];
             cout << "Representacao binaria: ";
             retornaBin(populacao[i]);
             cout << "\n" << endl;
-
-            ind.resultado = equacao(ind.individuo);
-
-            int limitePosi = 10; // Parametro de satisfação do calculo
-            int limiteNeg = -10;
-            if (ind.resultado >= limiteNeg && ind.resultado <= limitePosi) {
-              cout << "Valor satisfatorio!" << endl;
-              cout << "-----------------------------------------" << endl;
-            }  
-            else {
-               cout << "Valor insatisfatorio!" << endl;
-               cout << "-----------------------------------------" << endl;
-            }
-
-
+            avaliapopulacao(populacao[i]);
         }   
     }
-
-    
-     // colocar o ind.individuo em um vetor estatico que atualiza toda hora, setar o tamanho  pela variavel tamanho  
-
     std::sort(populacao, populacao + tamanho, ordenarIndividuos);
-
-    cout << "Ranking de Individuos" << std::endl;
+    cout << "Ranking de Individuos" << endl;
     for (int i = 0; i < tamanho; i++) {
-        //os melhores resultados fica na posição 1 e 2
-        cout << "Posicao " << i + 1<< ": " << populacao[i] << std::endl; 
+        cout << "Posicao " << i + 1<< ": " << populacao[i] << endl; 
     }  
+}
 
-    // Copia a população ordenada para um novo array
-    //ordenando a nova população e armazenando num novo array
-    int novaPopulacao[tamanho];
+// Função para ordenar a população
+void ordernarPopulacao(int tamanho, int populacao[]) {
+    int novaPopulacao[Individuos::MAX_TAMANHO_POPULACAO];
     for (int i = 0; i < tamanho; i++) {
         novaPopulacao[i] = populacao[i];
     }
-
-    // Substitui a população original pela nova população (ordena para a posição feita no ranking)
+    std::sort(novaPopulacao, novaPopulacao + tamanho, ordenarIndividuos);
     for (int i = 0; i < tamanho; i++) {
         populacao[i] = novaPopulacao[i];
     }
-    
-    char solucao;
-    cout<< "A solucao e boa? " << endl;
-    cin >> solucao;
-
-
-    if(solucao == 's'){
-        cout<< "Voce achou a solucao satisfatoria!" << endl;
-    }
-    else{
-        cout<<"Iniciando o cruzamento" << endl;
-    }
-
-
-    int tam_cross = 10; // tam _cross serve para cruzar indvivíduos, deixando intactos os melhores
-    //tem que trocar para o tamanho da população que deseja
-    int filhos[tam_cross];
-   
-    int contador_filhos = crossover(populacao, tam_cross, filhos);
-
-      // Adiciona os filhos gerados à população existente a partir da segunda posição
-    substituirPaisPorFilhos(populacao, filhos, contador_filhos);
-    //Coloca os filhos tira os pais, e deixa só os novos com o índice 0 e 1
-    //Caso a população seja 10--> i < 6
-    // Caso a população seja 100 --> i < 60
-    //Caso a população seja 1000 --> i < 600
-    cout<< "\nNovos Individuos: " << endl;
-    for(int i = 0; i < 6; i++){
-        cout << "Inviduo: "<< populacao[i] << endl;
-        ind.individuos_para_mutar[i] = populacao[i];
-    }
-    cout<< "Tamanho " << sizeof(populacao) << endl;
-
 }
 
+// Função principal para realizar o cruzamento
+void cruzamento(int tamanho, int populacao[]){
+    int tam_cross = 10;
+    int filhos[tam_cross];
+    int contador_filhos = crossover(populacao, tam_cross, filhos);
+    int melhores[20];
+    for (int i = 0; i < 10; i++) {
+        melhores[i] = populacao[i];
+        melhores[i + 10] = filhos[i];
+    }
+    std::sort(melhores, melhores + 20, ordenarIndividuos);
+    cout << "\nMelhores Individuos:" << endl;
+    for (int i = 0; i < 10; i++) {
+        cout << "Posicao " << i + 1 << ": " << melhores[i] << endl;
+    }
+}
+
+// Função para realizar a mutação
 void mutacao(int individuos_para_mutar[], int tamanho){
-    int individuos_mutados[tamanho]; // Array para armazenar os individuos mutados
-    int flip = rand() % 2;
-    if(tamanho == 10){
-        tamanho = 6;
-    }
-    else if(tamanho == 100){
-        tamanho=60;
-    }
-    else if(tamanho == 1000){
-        tamanho =600;
-    }
-    
-    cout<< "---------------------------------------------------------------" << endl;
-
-    for(int i =0; i< tamanho; i++){
-        cout<< "Individuo: " << individuos_para_mutar[i] << endl;
-    }
-    cout<< "---------------------------------------------------------------" << endl;
-    cout<<"Individuos que sofreram mutacao: " << endl;
-    //A mutação é aleatória de 50% para todos indivíduos, ou seja, todos podem sofrer mutação, ou não, como se fosse na natureza
-
+    int individuos_mutados[tamanho];
+    cout << "---------------------------------------------------------------" << endl;
     for(int i = 0; i < tamanho; i++){
-        int taxa_de_mutacao = rand() % 2; // taxa de mutação
-        if(taxa_de_mutacao == 0){ // 50% de chance de mutação //Lógica do flip moeda
-            int bit_aleatorio = rand() % 32; // Escolhe um bit aleatório
-            individuos_mutados[i] = individuos_para_mutar[i] ^ (1 << bit_aleatorio); // Altera o bit aleatório do indivíduo com bitwise
-            cout << individuos_mutados[i] << endl; // Exibe o indivíduo mutado
-        }
-        else {
-            individuos_mutados[i] = individuos_para_mutar[i]; // Se não houver mutação, o indivíduo permanece o mesmo
+        cout << "Individuo: " << individuos_para_mutar[i] << endl;
+    }
+    cout << "---------------------------------------------------------------" << endl;
+    cout << "Individuos que sofreram mutacao: " << endl;
+    for(int i = 0; i < tamanho; i++){
+        int taxa_de_mutacao = rand() % 2;
+        if(taxa_de_mutacao == 0){
+            int bit_aleatorio = rand() % 32;
+            individuos_mutados[i] = individuos_para_mutar[i] ^ (1 << bit_aleatorio);
+            cout << individuos_mutados[i] << endl;
+        } else {
+            individuos_mutados[i] = individuos_para_mutar[i]; // Não houve mutação
         }
     }
-
     // Substitui os indivíduos originais pelos indivíduos mutados
-    cout<< "----------------------------------------------------------------------------" << endl;
-    cout<< "Nova populacao com individuos mutados: " << endl;
-    cout << "-----------------------------------------" << endl;
     for(int i = 0; i < tamanho; i++) {
         individuos_para_mutar[i] = individuos_mutados[i];
-        cout<< individuos_para_mutar[i]<< endl; //indivíduos mutados junto com os não mutados
-    }
-    for(int i = 0; i < tamanho; i++){
-        avaliapopulacao(individuos_para_mutar[i]);
+        avaliapopulacao(individuos_para_mutar[i]); // Avalia o resultado da mutação
     }
 }
 
-
-
 int main() {
-    Individuos ind;
     srand(time(NULL));
     char op;
     int tamanho_da_populacao = 0;
     int geracao = 0;
 
-    const int MAX_TAMANHO_POPULACAO = 1000; // declaração do tamanho max da população
-    int populacao[MAX_TAMANHO_POPULACAO]; //atribuição do tamanho maximo da população para sofrer o crossover
-    
+    const int MAX_TAMANHO_POPULACAO = 1000;
+    int populacao[MAX_TAMANHO_POPULACAO];
 
     cout << "Deseja iniciar o programa? (s/n)" << endl;
     cin >> op;
     if (op == 's') {
         cout << "Escolha o tamanho da sua populacao: {10, 100, 1000}" << endl;
         cin >> tamanho_da_populacao;
+        cout << "Quantas geracoes deseja realizar?" << endl;
+        cin >> geracao;
         if (tamanho_da_populacao == 10 || tamanho_da_populacao == 100 || tamanho_da_populacao == 1000) {
-            populacaoInicial(tamanho_da_populacao, populacao); // armazenar individuos gerados
-            
-            cout<< "Iniciando Mutacao " << endl;
-            mutacao( populacao, tamanho_da_populacao);       
-            cout << "----------------------------------------------------------------" << endl;
+            populacaoInicial(tamanho_da_populacao, populacao);
+            for(int i = 0; i < geracao; i++){
+                ordernarPopulacao(tamanho_da_populacao, populacao);
+                char solucao;
+                cout << "A solucao e boa? " << endl;
+                cin >> solucao;
+                if (solucao == 's') {
+                    cout << "Voce achou a solucao satisfatoria!" << endl;
+                    return 0;
+                } else {
+                    cout << "Iniciando o cruzamento" << endl;
+                    cruzamento(tamanho_da_populacao, populacao);
+                }
+                cout << "----------------------------------------------------------------" << endl;
+                cout<< "Iniciando Mutacao " << endl;
+                mutacao( populacao, tamanho_da_populacao);       
+                cout << "----------------------------------------------------------------" << endl;
+                ordernarPopulacao(tamanho_da_populacao, populacao);
+                // Imprime a população ordenada novamente
+                cout << "Populacao ordenada apos a mutacao:" << endl;
+                for (int i = 0; i < tamanho_da_populacao; i++) {
+                    cout << "Posicao " << i + 1 << ": " << populacao[i] << endl;
+                }
+            }
         }
         else {
             cout << "Nao sao permitidas populacoes que nao tenham tamanho de 10, 100 ou 1000!" << endl;
             return 0;
         }
     }
-
     else {
         cout << "O programa sera encerrado!" << endl;
         return 0;
