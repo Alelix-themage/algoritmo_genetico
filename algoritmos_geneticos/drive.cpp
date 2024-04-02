@@ -141,9 +141,9 @@ void mutacao(int individuos_para_mutar[], int tamanho){
     cout << "---------------------------------------------------------------" << endl;
     cout << "Individuos que sofreram mutacao: " << endl;
     for(int i = 0; i < tamanho; i++){
-        int taxa_de_mutacao = rand() % 2;
+        int taxa_de_mutacao = rand() % 2;//Lógica do flip moeda
         if(taxa_de_mutacao == 0){
-            int bit_aleatorio = rand() % 32;
+            int bit_aleatorio = rand() % 32;//Escolhe um dos 32 bits
             individuos_mutados[i] = individuos_para_mutar[i] ^ (1 << bit_aleatorio);
             cout << individuos_mutados[i] << endl;
         } else {
